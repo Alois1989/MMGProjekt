@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Blatt1.cpp">
+    <ClCompile Include="aufgabe1_2_c.cpp">
       <Filter>Ressourcendateien</Filter>
     </ClCompile>
   </ItemGroup>

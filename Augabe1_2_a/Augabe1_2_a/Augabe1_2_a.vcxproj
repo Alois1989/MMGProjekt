@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{191C6616-2912-47BE-B0C5-C8615AE85E30}</ProjectGuid>
+    <ProjectGuid>{838A1028-A8DB-4BF1-A690-4BC4912BB013}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Blatt1</RootNamespace>
+    <RootNamespace>Augabe1_2_a</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -145,7 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Blatt1.cpp" />
+    <ClCompile Include="Aufgabe1_2_a.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
