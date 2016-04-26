@@ -21,10 +21,14 @@ int main()
 
 	vector<Mat> channels(3);
 	// split img:
-	split(img, channels);
-	// Farbkanaele übertragen
+	for (int i = 0; i < 3;i++)
+	{
+		split(img, channels[]);
+		// Farbkanaele übertragen
+	}
 
 	blau = channels[0];
+
 	gruen = channels[1];
 	rot = channels[2];
 
