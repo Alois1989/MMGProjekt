@@ -7,16 +7,16 @@
 using namespace std;
 using namespace cv;
 
-void imhist(Mat image, int histogram[]){
+void calcuHist(Mat img, int histogram[]){
 
 	for (int i = 0; i < 256; i++)
 	{
 		histogram[i] = 0;
 	}
 
-	for (int y = 0; y < image.rows; y++)
-	for (int x = 0; x < image.cols; x++)
-		histogram[(int)image.at<uchar>(y, x)]++;
+	for (int y = 0; y < img.rows; y++)
+	for (int x = 0; x < img.cols; x++)
+		histogram[(int)img.at<uchar>(y, x)]++;
 }
 
 
@@ -28,88 +28,92 @@ int main()
 	{
 		return -1;
 	}
+	//Vektor für die Farbkanaele
+	vector<Mat> bgr_channs;
+	//Bild src in Kanaele aufsplitten
+	split(src, bgr_channs);
 
-	vector<Mat> bgr_planes;
-	split(src, bgr_planes);
-
-
+	//Start intitial fuer 2^2 Bins in while-Schleife
 	int n = 2;
-	while (n < 9){
-		/// Anzahl der Bins hier 2^2, 2^4, 2^6, 2^8
 
+	while (n < 9){
+
+		//Wird pro Schleifendurchlauf um 2 erhoeht 2^n Bins...
 		int histSize = pow(2.0, n);
 
-		/// Set the ranges ( for B,G,R) )
-		float range[] = { 0, 256 };
-		const float* histRange = { range };
+		//Leerbilder für jew. Histogramm erstellen
+		Mat bla_hist, grue_hist, rot_hist;
 
-		bool uniform = true; bool accumulate = false;
-
-		Mat b_hist, g_hist, r_hist;
-		int histogramr[256], histogramg[256], histogramb[256];
+		//Arrays für jew. Histogramme erstellen
+		int histogramRo[256], histogramGru[256], histogramBla[256];
 
 
-		/// Compute the histograms:
+		//Histogramme für die jew. Kanaele erstellen mit jew. Kanalvektor an calcuhist übergeben
+		
+		calcuHist(bgr_channs[2], histogramRo);
+		
+		calcuHist(bgr_channs[1], histogramGru);
+		
+		calcuHist(bgr_channs[0], histogramBla);
 
-		imhist(bgr_planes[0], histogramb);
-		imhist(bgr_planes[1], histogramg);
-		imhist(bgr_planes[2], histogramr);
 
+		
+		int hist_br = 512; int hist_h = 400;
 
-		// Draw the histograms for B, G and R
-		int hist_w = 512; int hist_h = 400;
-		int bin_w = cvRound((double)hist_w / histSize);
+		int bin_br = cvRound((double)hist_br / histSize);
 
-		Mat histImage(hist_h, hist_w, CV_8UC3, Scalar(0, 0, 0));
+		Mat histImage(hist_h, hist_br, CV_8UC3, Scalar(0, 0, 0));
 
-		/// Normalize the result to [ 0, histImage.rows ]
-		int maxb = histogramb[0];
+		
+		//Jew. Maximalwerte in den Einzelnen Kanalarrays ermitteln fuer Normalisierung
+		int maxro = histogramRo[0];
 		for (int i = 1; i < 256; i++){
-			if (maxb < histogramb[i]){
-				maxb = histogramb[i];
+			if (maxro < histogramRo[i]){
+				maxro = histogramRo[i];
 			}
 		}
-		int maxg = histogramg[0];
+		int maxgru = histogramGru[0];
 		for (int i = 1; i < 256; i++){
-			if (maxg < histogramg[i]){
-				maxg = histogramg[i];
+			if (maxgru < histogramGru[i]){
+				maxgru = histogramGru[i];
 			}
 		}
-		int maxr = histogramr[0];
+		
+		int maxbla = histogramBla[0];
 		for (int i = 1; i < 256; i++){
-			if (maxr < histogramr[i]){
-				maxr = histogramr[i];
+			if (maxbla < histogramBla[i]){
+				maxbla = histogramBla[i];
 			}
 		}
 
+		//Normalisieren
 		for (int i = 0; i < 255; i++){
-			histogramb[i] = ((double)histogramb[i] / maxb)*histImage.rows;
-			histogramg[i] = ((double)histogramg[i] / maxg)*histImage.rows;
-			histogramr[i] = ((double)histogramr[i] / maxr)*histImage.rows;
-			cout << "teste0" << endl;
+			histogramBla[i] = ((double)histogramBla[i] / maxbla)*histImage.rows;
+			histogramGru[i] = ((double)histogramGru[i] / maxgru)*histImage.rows;
+			histogramRo[i] = ((double)histogramRo[i] / maxro)*histImage.rows;
 		}
 
-		/// Draw for each channel
+		/// Jeder Kanal wird mit entsprechender Farbe gezeichnet
 		for (int i = 1; i < histSize; i++)
 		{
-			line(histImage, Point(bin_w*(i - 1), hist_h - histogramb[i]),
-				Point(bin_w*(i), hist_h - histogramb[i]),
-				Scalar(255, 0, 0), 2, 8, 0);
-			cout << "teste1" << endl;
-			line(histImage, Point(bin_w*(i - 1), hist_h - histogramg[i]),
-				Point(bin_w*(i), hist_h - histogramg[i]),
-				Scalar(0, 255, 0), 2, 8, 0);
-			cout << "teste2" << endl;
-			line(histImage, Point(bin_w*(i - 1), hist_h - histogramr[i]),
-				Point(bin_w*(i), hist_h - histogramr[i]),
+			line(histImage, Point(bin_br*(i - 1), hist_h - histogramRo[i]),
+				Point(bin_br*(i), hist_h - histogramRo[i]),
 				Scalar(0, 0, 255), 2, 8, 0);
-			cout << "teste3" << endl;
+			cout << "Wird berechnet" << endl;
+			line(histImage, Point(bin_br*(i - 1), hist_h - histogramGru[i]),
+				Point(bin_br*(i), hist_h - histogramGru[i]),
+				Scalar(0, 255, 0), 2, 8, 0);
+			cout << "Wird berechnet" << endl;
+			line(histImage, Point(bin_br*(i - 1), hist_h - histogramBla[i]),
+				Point(bin_br*(i), hist_h - histogramBla[i]),
+				Scalar(255, 0, 0), 2, 8, 0);
+			cout << "Wird berechnet" << endl;
 		}
 
-		/// Display
-		namedWindow("calcHist Demo", CV_WINDOW_AUTOSIZE);
-		imshow("calcHist Demo", histImage);
-
+		//Anzeige der Bilder
+	
+		imshow("Histogramm", histImage);
+		cout << "Histogramm fuer 2 ^" << n << " Bins. Fuer naechst groessere Binstufe bitte Fenster schliessen!" << endl;
 		waitKey(0);
 
 		n+=2;

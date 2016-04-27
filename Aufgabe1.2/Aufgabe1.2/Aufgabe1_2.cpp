@@ -3,6 +3,7 @@
 #include <opencv2\imgproc.hpp>
 #include <cstdio>
 #include <sstream>
+#include <iostream>
 
 
 
@@ -17,26 +18,44 @@ int main()
 	Mat img = imread("Lenna.png");
 	imshow("Original", img);
 
+	//leere Bilddummies fuer jew. Kanaele
 	Mat blau, rot, gruen;
 
-	vector<Mat> channels(3);
-	// split img:
-	for (int i = 0; i < 3;i++)
-	{
-		split(img, channels[]);
-		// Farbkanaele übertragen
-	}
+	//Originialbild in Kanalbilder komplett kopieren
+	rot = img.clone();
+	gruen = img.clone();
+	blau = img.clone();
 
-	blau = channels[0];
+	//Farbraume abziehen
+	rot = rot - Scalar(255, 255, 0);
 
-	gruen = channels[1];
-	rot = channels[2];
+	gruen = gruen - Scalar(255, 0, 255);
 
+	blau = blau - Scalar(0, 255, 255);
 
-
+	//Bild ausgeben
 	imshow("Blaukanal", blau);
 	imshow("Grünkanal", gruen);
 	imshow("Rotkanal", rot);
+
+	//Kanaele tauschen
+
+	Mat picRGB = imread("Lenna.png");
+
+	for (int y = 0; y < picRGB.rows; y++) {
+		for (int x = 0; x < picRGB.cols; x++) {
+
+			//Kanal zwischenspeichern
+			uchar buf = picRGB.at<Vec3b>(y, x)[2];
+			//Vertauschung der Kanaele
+			picRGB.at<Vec3b>(y, x)[2] = picRGB.at<Vec3b>(y, x)[0];
+			picRGB.at<Vec3b>(y, x)[0] = buf;
+		}
+	}
+
+	imshow("BGR2RGB", picRGB);
+	imwrite("BGR2RGB.png", picRGB);
+
 
 	waitKey();
 
